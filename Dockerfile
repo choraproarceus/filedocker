@@ -1,16 +1,17 @@
-# Usa Ubuntu como base
-FROM ubuntu:22.04
+# Use a base image that supports systemd, for example, Ubuntu
+FROM ubuntu:20.04
 
-# Evita prompts interativos
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Instala curl e git (caso queira fazer checkout no futuro)
+# Install necessary packages
 RUN apt-get update && \
-    apt-get install -y curl git ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y shellinabox && \
+    apt-get install -y systemd && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Diretório de trabalho
-WORKDIR /app
+RUN echo 'root:root' | chpasswd
 
-# Executa o mesmo comando que você usa no GitHub Actions
-CMD curl -sSf https://sshx.io/get | sh -s run
+# Expose the web-based terminal port
+EXPOSE 4200
+
+# Start shellinabox
+CMD ["/usr/bin/shellinaboxd", "-t", "-s", "/:LOGIN"]
