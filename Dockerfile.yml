@@ -1,20 +1,16 @@
-name: vps
+# Usa Ubuntu como base
+FROM ubuntu:22.04
 
-# Controls when the workflow will run
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+# Evita prompts interativos
+ENV DEBIAN_FRONTEND=noninteractive
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# Instala curl e git (caso queira fazer checkout no futuro)
+RUN apt-get update && \
+    apt-get install -y curl git ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+# Diretório de trabalho
+WORKDIR /app
 
-      - name: Run VPS
-        run: curl -sSf https://sshx.io/get | sh -s run
+# Executa o mesmo comando que você usa no GitHub Actions
+CMD curl -sSf https://sshx.io/get | sh -s run
